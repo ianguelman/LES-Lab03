@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+  scripts:
+    links:
+      - mongo
+    depends_on:
+      mongo:
+        condition: service_healthy
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    volumes:
+      - "./:/home/python/lab03"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      TOKEN: "???"
+      API_URL: "https://api.github.com/graphql"
+      DATABASE_HOST: mongo
+      DATABASE_PORT: 27017
+      PRIMARY_DATABASE: lab03
+      REPO_COLLECTION: repos
+      PR_COLLECTION: pullRequests
+      DATABASE_USERNAME: root
+      DATABASE_PASSWORD: LAB03
+
+
+  mongo:
+    image: mongo
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    volumes:
+    - "./csv:/csv"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: LAB03
+    ports:
+      - "27017:27017"
+    command: mongod --quiet --logpath /dev/null
