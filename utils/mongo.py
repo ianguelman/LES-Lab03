@@ -41,6 +41,10 @@ class Mongo:
     def get_documents_count(self, collection):
         self.set_collection(collection)
         return self.__collection.count_documents({})
+
+    def get_processed_documents_count(self, collection):
+        self.set_collection(collection)
+        return self.__collection.count_documents({"processed":True})
     
     def get_all_documents(self, collection):
         self.set_collection(collection)

@@ -66,7 +66,9 @@ def run():
                 "processed": False
             }
 
-            for node in list(map(formatter, response["data"]["search"]["nodes"])):
+            nodes = list(map(formatter, response["data"]["search"]["nodes"]))
+
+            for node in nodes:
                 if int(node["mergedPr"]) + int(node["closedPr"]) >= 100:
                     Mongo().insert_one(node, "repo")
 
@@ -78,7 +80,6 @@ def run():
 
             if not response["data"]["search"]["pageInfo"]["hasNextPage"]:
                 break
-
 
     else:
         print(f"DB already populated with {items_count} repos")

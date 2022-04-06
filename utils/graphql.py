@@ -17,7 +17,7 @@ class GraphQL:
         if request.status_code == 200:
             return json.loads(request.text)
         else:
-            raise Exception("Query failed, with status code {}".format(request.status_code))
+            raise Exception(f'Query failed, with status code {request.status_code}')
 
 
         
