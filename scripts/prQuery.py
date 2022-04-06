@@ -24,6 +24,7 @@ def run():
             if repo["processed"] is False:
 
                 prAnalysed = 0
+                query_ended = False
 
                 while not query_ended:
                     
@@ -69,8 +70,6 @@ def run():
                             "perPage": PER_PAGE,
                         },
                     )
-
-                    query_ended = True
 
                     last_cursor = response["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
                     prCount = response["data"]["repository"]["pullRequests"]["totalCount"]
