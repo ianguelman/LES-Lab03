@@ -96,7 +96,7 @@ def run():
                     for node in nodes:
                         prAnalysed += 1
                         if int(node["reviews"]) >= 1 and (node["closed"] or node["merged"]):
-                            if min(node["mergeTime"] if node["merged"] else sys.maxsize, node["closeTime"] if node["closed"] else sys.maxsize,) >= 60:
+                            if min(node["mergeTimeHours"] if node["merged"] else sys.maxsize, node["closeTimeHours"] if node["closed"] else sys.maxsize,) >= 1:
                                 Mongo().insert_one(node, "pr")
 
                                 print(
