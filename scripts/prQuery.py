@@ -86,8 +86,8 @@ def run():
                         "files": node["files"]["totalCount"],
                         "bodySize": len(node["bodyText"]),
                         "changedFiles": node["changedFiles"],
-                        "participants": node["participants"],
-                        "comments": node["comments"],
+                        "participants": node["participants"]["totalCount"],
+                        "comments": node["comments"]["totalCount"],
                     }
 
                     nodes = list(
