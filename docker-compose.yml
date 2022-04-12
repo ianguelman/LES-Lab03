@@ -14,7 +14,7 @@ services:
       - "./:/home/python/lab03"
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
-      TOKEN: "???"
+      TOKENS: ???
       API_URL: "https://api.github.com/graphql"
       DATABASE_HOST: mongo
       DATABASE_PORT: 27017

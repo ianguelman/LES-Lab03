@@ -69,6 +69,7 @@ def run():
                             "lastCursor": last_cursor,
                             "perPage": PER_PAGE,
                         },
+                        0
                     )
 
                     last_cursor = response["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
