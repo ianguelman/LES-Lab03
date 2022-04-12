@@ -46,7 +46,7 @@ def run():
                                     files(first: 1) {
                                         totalCount
                                     }
-                                    bodyText
+                                    body
                                     changedFiles
                                     participants(first: 1) {
                                         totalCount
