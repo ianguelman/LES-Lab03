@@ -32,7 +32,7 @@ def run():
                         """
                         query pullRequests($name: String!, $owner: String!, $perPage: Int, $lastCursor: String) {
                             repository(name: $name, owner: $owner) {
-                                pullRequests(first: $perPage, after: $lastCursor) {
+                                pullRequests(first: $perPage, after: $lastCursor, states: [MERGED,CLOSED]) {
                                 totalCount
                                 nodes {
                                     reviews(first: 1) {
