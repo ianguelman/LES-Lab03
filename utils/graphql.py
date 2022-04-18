@@ -27,7 +27,7 @@ class GraphQL:
             self.post(query, variables)
         else:
             raise Exception(f'Query failed, with status code {request.status_code}')
-        time.sleep(5)
+        time.sleep(0.1)
 
 
         
