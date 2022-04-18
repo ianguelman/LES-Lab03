@@ -103,7 +103,7 @@ def run():
                                         f'{repo["name"]} - Pull request data added to DB - {prAnalysed} pull requests analysed out of {prCount} ({prCount - prAnalysed} left)')
 
                         if not response["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]:
-                            reposLen = repos.len()
+                            reposLen = len(repos)
                             repoIndex = repos.index(repo)
                             print(f'{repo["name"]} - All pull requests analysed - {repoIndex} repositories analysed out of {reposLen} ({reposLen - repoIndex} left)')
                             Mongo().update_one({'url': repo["url"]}, {
