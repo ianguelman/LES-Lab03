@@ -107,7 +107,9 @@ def run():
                             repoIndex = repos.index(repo)
                             print(f'{repo["name"]} - All pull requests analysed - {repoIndex} repositories analysed out of {reposLen} ({reposLen - repoIndex} left)')
                             Mongo().update_one({'url': repo["url"]}, {
-                                '$set': {'processed': True}})
+                                '$set': {'processed': True}},
+                                "repo"
+                                )
                             query_ended = True
                             break
             else:
