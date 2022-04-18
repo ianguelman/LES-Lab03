@@ -6,7 +6,7 @@ from dateutil.parser import parse
 from utils.graphql import GraphQL
 from utils.mongo import Mongo
 
-PER_PAGE = 50
+PER_PAGE = 10
 
 
 def run():
@@ -68,49 +68,48 @@ def run():
                             "owner": repo["owner"],
                             "lastCursor": last_cursor,
                             "perPage": PER_PAGE,
-                        },
-                        0
+                        }
                     )
+                    if response != None and response["data"]:
+                        last_cursor = response["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
+                        prCount = response["data"]["repository"]["pullRequests"]["totalCount"]
 
-                    last_cursor = response["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
-                    prCount = response["data"]["repository"]["pullRequests"]["totalCount"]
+                        def formatter(node): return {
+                            "reviews": node["reviews"]["totalCount"],
+                            "merged": node["merged"],
+                            "closed": node["closed"],
+                            "createdAt": node["createdAt"],
+                            "mergedAt": node["mergedAt"],
+                            "mergeTimeHours": (parse(node["mergedAt"]).replace(tzinfo=None) - parse(node["createdAt"]).replace(tzinfo=None)).total_seconds() / 60 / 60 if node["merged"] else None, 
+                            "closedAt": node["closedAt"],
+                            "closeTimeHours": (parse(node["closedAt"]).replace(tzinfo=None) - parse(node["createdAt"]).replace(tzinfo=None)).total_seconds() / 60 / 60 if node["closed"] else None,
+                            "files": node["files"]["totalCount"],
+                            "bodySize": len(node["body"]),
+                            "changedFiles": node["changedFiles"],
+                            "participants": node["participants"]["totalCount"],
+                            "comments": node["comments"]["totalCount"],
+                        }
 
-                    def formatter(node): return {
-                        "reviews": node["reviews"]["totalCount"],
-                        "merged": node["merged"],
-                        "closed": node["closed"],
-                        "createdAt": node["createdAt"],
-                        "mergedAt": node["mergedAt"],
-                        "mergeTimeHours": (parse(node["mergedAt"]).replace(tzinfo=None) - parse(node["createdAt"]).replace(tzinfo=None)).total_seconds() / 60 / 60 if node["merged"] else None, 
-                        "closedAt": node["closedAt"],
-                        "closeTimeHours": (parse(node["closedAt"]).replace(tzinfo=None) - parse(node["createdAt"]).replace(tzinfo=None)).total_seconds() / 60 / 60 if node["closed"] else None,
-                        "files": node["files"]["totalCount"],
-                        "bodySize": len(node["bodyText"]),
-                        "changedFiles": node["changedFiles"],
-                        "participants": node["participants"]["totalCount"],
-                        "comments": node["comments"]["totalCount"],
-                    }
+                        nodes = list(
+                            map(formatter, response["data"]["repository"]["pullRequests"]["nodes"]))
 
-                    nodes = list(
-                        map(formatter, response["data"]["repository"]["pullRequests"]["nodes"]))
+                        for node in nodes:
+                            prAnalysed += 1
+                            if int(node["reviews"]) >= 1 and (node["closed"] or node["merged"]):
+                                if min(node["mergeTimeHours"] if node["merged"] else sys.maxsize, node["closeTimeHours"] if node["closed"] else sys.maxsize,) >= 1:
+                                    Mongo().insert_one(node, "pr")
 
-                    for node in nodes:
-                        prAnalysed += 1
-                        if int(node["reviews"]) >= 1 and (node["closed"] or node["merged"]):
-                            if min(node["mergeTimeHours"] if node["merged"] else sys.maxsize, node["closeTimeHours"] if node["closed"] else sys.maxsize,) >= 1:
-                                Mongo().insert_one(node, "pr")
+                                    print(
+                                        f'{repo["name"]} - Pull request data added to DB - {prAnalysed} pull requests analysed out of {prCount} ({prCount - prAnalysed} left)')
 
-                                print(
-                                    f'{repo["name"]} - Pull request data added to DB - {prAnalysed} pull requests analysed out of {prCount} ({prCount - prAnalysed} left)')
-
-                    if not response["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]:
-                        reposLen = repos.len()
-                        repoIndex = repos.index(repo)
-                        print(f'{repo["name"]} - All pull requests analysed - {repoIndex} repositories analysed out of {reposLen} ({reposLen - repoIndex} left)')
-                        Mongo().update_one({'url': repo["url"]}, {
-                            '$set': {'processed': True}})
-                        query_ended = True
-                        break
+                        if not response["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]:
+                            reposLen = repos.len()
+                            repoIndex = repos.index(repo)
+                            print(f'{repo["name"]} - All pull requests analysed - {repoIndex} repositories analysed out of {reposLen} ({reposLen - repoIndex} left)')
+                            Mongo().update_one({'url': repo["url"]}, {
+                                '$set': {'processed': True}})
+                            query_ended = True
+                            break
             else:
                 print(
                     f'{repo["name"]} - Repository had already been processed')
