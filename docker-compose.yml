@@ -23,6 +23,7 @@ services:
       PR_COLLECTION: pullRequests
       DATABASE_USERNAME: root
       DATABASE_PASSWORD: LAB03
+    restart: on-failure
 
 
   mongo:
