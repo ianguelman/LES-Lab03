@@ -35,6 +35,7 @@ def run():
                                 pullRequests(first: $perPage, after: $lastCursor, states: [MERGED,CLOSED]) {
                                 totalCount
                                 nodes {
+                                    id
                                     reviews(first: 1) {
                                         totalCount
                                     }
@@ -75,6 +76,8 @@ def run():
                         prCount = response["data"]["repository"]["pullRequests"]["totalCount"]
 
                         def formatter(node): return {
+                            "_id": node["id"],
+                            "repoName": repo["name"],
                             "reviews": node["reviews"]["totalCount"],
                             "merged": node["merged"],
                             "closed": node["closed"],
