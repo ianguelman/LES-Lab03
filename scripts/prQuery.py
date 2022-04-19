@@ -71,7 +71,7 @@ def run():
                             "perPage": PER_PAGE,
                         }
                     )
-                    if response != None and response["data"]:
+                    if response != None and "data" in response:
                         last_cursor = response["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
                         Mongo().update_one({'_id': 'lastCursor'}, {'$set': {'value': last_cursor}}, "config")
                         prCount = response["data"]["repository"]["pullRequests"]["totalCount"]

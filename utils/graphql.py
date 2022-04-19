@@ -18,7 +18,8 @@ class GraphQL:
         token = self.tokens[self.retries]
         request = requests.post(
             self.api, json={'query': query, "variables": variables}, 
-            headers={'Authorization': f'bearer {token}'}
+            headers={'Authorization': f'bearer {token}'},
+            stream=True
         )
         time.sleep(0.1)
         if request.status_code == 200:
