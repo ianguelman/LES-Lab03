@@ -18,7 +18,7 @@ def run():
     if processed_count < repos_count:
 
         graphql = GraphQL(os.environ["API_URL"])
-        last_cursor = None
+        last_cursor = Mongo().get_document({'_id': 'lastCursor'}, "config")['value']
 
         for repo in repos:
             if repo["processed"] is False:
@@ -73,6 +73,7 @@ def run():
                     )
                     if response != None and response["data"]:
                         last_cursor = response["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
+                        Mongo().update_one({'_id': 'lastCursor'}, {'$set': {'value': last_cursor}}, "config")
                         prCount = response["data"]["repository"]["pullRequests"]["totalCount"]
 
                         def formatter(node): return {
@@ -113,6 +114,7 @@ def run():
                                 '$set': {'processed': True}},
                                 "repo"
                                 )
+                            Mongo().update_one({'_id': 'lastCursor'}, {'$set': {'value': None}}, "config")
                             query_ended = True
                             break
             else:

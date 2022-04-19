@@ -24,7 +24,9 @@ class Mongo:
         if collection == 'repo':
            self.__collection = self.__database[os.environ['REPO_COLLECTION']]
         elif collection == 'pr':
-           self.__collection = self.__database[os.environ['PR_COLLECTION']]  
+           self.__collection = self.__database[os.environ['PR_COLLECTION']]
+        elif collection == 'config':
+           self.__collection = self.__database[os.environ['CONFIG_COLLECTION']] 
         
     def insert_one(self, value, collection):
         self.set_collection(collection)
@@ -46,6 +48,10 @@ class Mongo:
         self.set_collection(collection)
         return self.__collection.count_documents({"processed":True})
     
+    def get_document(self, query, collection):
+        self.set_collection(collection)
+        return self.__collection.find(query)[0]
+
     def get_all_documents(self, collection):
         self.set_collection(collection)
         documents = []

@@ -21,6 +21,7 @@ services:
       PRIMARY_DATABASE: lab03
       REPO_COLLECTION: repos
       PR_COLLECTION: pullRequests
+      CONFIG_COLLECTION: config
       DATABASE_USERNAME: root
       DATABASE_PASSWORD: LAB03
     restart: on-failure
