@@ -36,7 +36,7 @@ class Mongo:
 
     def update_one(self, query, value, collection):
         self.set_collection(collection)
-        self.__collection.update_one(query, value)
+        self.__collection.update_one(query, value, upsert=True)
 
     def get_documents_count(self, collection):
         self.set_collection(collection)

@@ -100,7 +100,7 @@ def run():
                             prAnalysed += 1
                             if int(node["reviews"]) >= 1 and (node["closed"] or node["merged"]):
                                 if min(node["mergeTimeHours"] if node["merged"] else sys.maxsize, node["closeTimeHours"] if node["closed"] else sys.maxsize,) >= 1:
-                                    Mongo().insert_one(node, "pr")
+                                    Mongo().update_one({'_id': node['_id']}, {'$set': node}, "pr")
 
                                     print(
                                         f'{repo["name"]} - Pull request data added to DB - {prAnalysed} pull requests analysed out of {prCount} ({prCount - prAnalysed} left)')
